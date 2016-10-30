@@ -20,7 +20,7 @@ public class UserController {
 	@Autowired
 	UserRepository userRepository;
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST )
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody User user) {
 		User userQuery = userRepository.findOneByUserNameAndPassword(user.getUserName(), user.getPassword());
 		if (userQuery == null){
