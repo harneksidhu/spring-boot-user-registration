@@ -3,7 +3,6 @@ package com.user.registration.controller.v1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.user.registration.model.User;
 import com.user.registration.repository.UserRepository;
+import com.user.registration.utility.UserRegistrationUtil;
 
 @RestController
 @RequestMapping(value="/v1")
@@ -32,9 +32,19 @@ public class UserController {
 	
 	@RequestMapping(value= "/register", method = RequestMethod.POST)
 	@ResponseBody
-	public User getUserInfo(@RequestBody User user) {
-		userRepository.save(user);
-		return user;
+	public ResponseEntity<?> getUserInfo(@RequestBody User user) {
+		User userQuery = userRepository.findOneByUserName(user.getUserName());
+		if (userQuery == null){
+			if (UserRegistrationUtil.isUserNameValid(user.getUserName()) && 
+					UserRegistrationUtil.isPasswordValid(user.getPassword())){
+				User savedUser = userRepository.save(user);
+				return new ResponseEntity<User>(savedUser, HttpStatus.CREATED);	
+			}else{
+				return new ResponseEntity<String>("Invalid username and password", HttpStatus.BAD_REQUEST);
+			}
+		} else{
+			return new ResponseEntity<User>(userQuery, HttpStatus.OK);
+		}
 	}
 	
 }	
