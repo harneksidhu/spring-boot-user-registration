@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user.registration.controller.exception.BaseApiException;
 import com.user.registration.model.User;
 import com.user.registration.repository.UserRepository;
 import com.user.registration.utility.UserRegistrationUtil;
@@ -21,18 +22,18 @@ public class UserController {
 	UserRepository userRepository;
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@RequestBody User user) {
+	public ResponseEntity<String> login(@RequestBody User user) {
 		User userQuery = userRepository.findOneByUserNameAndPassword(user.getUserName(), user.getPassword());
 		if (userQuery == null){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		} else{
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<String>(HttpStatus.OK);
 		}
 	}
 	
 	@RequestMapping(value= "/register", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<?> getUserInfo(@RequestBody User user) {
+	public ResponseEntity<User> register(@RequestBody User user) throws BaseApiException {
 		User userQuery = userRepository.findOneByUserName(user.getUserName());
 		if (userQuery == null){
 			if (UserRegistrationUtil.isUserNameValid(user.getUserName()) && 
@@ -40,7 +41,7 @@ public class UserController {
 				User savedUser = userRepository.save(user);
 				return new ResponseEntity<User>(savedUser, HttpStatus.CREATED);	
 			}else{
-				return new ResponseEntity<String>("Invalid username and password", HttpStatus.BAD_REQUEST);
+				throw new BaseApiException("Invalid username and password");
 			}
 		} else{
 			return new ResponseEntity<User>(userQuery, HttpStatus.OK);
