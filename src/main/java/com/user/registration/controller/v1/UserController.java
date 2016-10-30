@@ -33,7 +33,7 @@ public class UserController {
 	
 	@RequestMapping(value= "/register", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<User> register(@RequestBody User user) throws BaseApiException {
+	public ResponseEntity<User> register(@RequestBody User user) {
 		User userQuery = userRepository.findOneByUserName(user.getUserName());
 		if (userQuery == null){
 			if (UserRegistrationUtil.isUserNameValid(user.getUserName()) && 

@@ -1,6 +1,6 @@
 package com.user.registration.controller.exception;
 
-public class BaseApiException extends Exception {
+public class BaseApiException extends RuntimeException {
 
 	/**
 	 * 
