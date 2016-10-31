@@ -6,7 +6,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,16 +27,21 @@ public class UserControllerTest {
 	@Mock
 	private UserRepository userRepository;
 	
+	@Rule
+    public ExpectedException thrown = ExpectedException.none();
+	
+	User user;
+	
 	@Before
 	public void init(){
 		MockitoAnnotations.initMocks(this);
+		user = new User();
+		user.setUserName("testUser");
+		user.setPassword("testPassword1");
 	}
 	
 	@Test
-	public void testUserLogin(){
-		User user = new User();
-		user.setUserName("testUser");
-		user.setPassword("testPassword1");
+	public void testUserLoginNotFound(){
 		when(userRepository.findOneByUserNameAndPassword(user.getUserName(), user.getPassword())).
 			thenReturn(null);
 		ResponseEntity<String> response = userController.login(user);
@@ -43,15 +50,50 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	public void testUserRegistration(){
-		User user = new User();
-		user.setUserName("testUser");
-		user.setPassword("testPassword1");
-		try {
-			userController.register(user);
-		} catch (BaseApiException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void testUserLoginFound(){
+		when(userRepository.findOneByUserNameAndPassword(user.getUserName(), user.getPassword())).
+			thenReturn(user);
+		ResponseEntity<String> response = userController.login(user);
+		assertThat(response.getStatusCode(), is(HttpStatus.OK));
+		assertThat(response.getBody(), is(nullValue()));
+	}
+	
+	@Test
+	public void testUserRegistrationAlreadyExists(){
+		when(userRepository.findOneByUserName(user.getUserName())).
+			thenReturn(user);
+		ResponseEntity<User> response = userController.register(user);
+		assertThat(response.getStatusCode(), is(HttpStatus.OK));
+		assertThat(response.getBody(), is(user));
+	}
+	
+	@Test
+	public void testUserRegistrationNotExist(){
+		when(userRepository.findOneByUserName(user.getUserName())).
+			thenReturn(null);
+		when(userRepository.save(user)).
+			thenReturn(user);
+		ResponseEntity<User> response = userController.register(user);
+		assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
+		assertThat(response.getBody(), is(user));
+	}
+	
+	@Test(expected=BaseApiException.class)
+	public void testUserRegistrationInvalidUserName(){
+		User invalidUser = new User();
+		invalidUser.setUserName("u");
+		invalidUser.setPassword("p");
+		when(userRepository.findOneByUserName(invalidUser.getUserName())).
+			thenReturn(null);
+		userController.register(invalidUser);
+	}
+	
+	@Test
+	public void testUserRegistrationExists(){
+		when(userRepository.findOneByUserName(user.getUserName())).
+			thenReturn(user);
+		ResponseEntity<User> response = userController.register(user);
+		assertThat(response.getStatusCode(), is(HttpStatus.OK));
+		assertThat(response.getBody(), is(user));
 	}
 }
