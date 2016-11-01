@@ -35,7 +35,7 @@ public class UserRepositoryIntegrationTest {
 	
 	@After
 	public void cleanup(){
-		userRepository.delete(user);
+		userRepository.deleteAll();
 	}
 	
 	@Test

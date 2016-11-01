@@ -3,6 +3,9 @@ package com.user.registration.model;
 public class ApiExceptionMessage {
 	private String message;
 	
+	public ApiExceptionMessage() {
+    }
+	
 	public ApiExceptionMessage(String message) {
 		this.message = message;
 	}
