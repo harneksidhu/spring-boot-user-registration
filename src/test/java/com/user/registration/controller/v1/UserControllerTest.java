@@ -26,10 +26,7 @@ public class UserControllerTest {
 	
 	@Mock
 	private UserRepository userRepository;
-	
-	@Rule
-    public ExpectedException thrown = ExpectedException.none();
-	
+		
 	User user;
 	
 	@Before

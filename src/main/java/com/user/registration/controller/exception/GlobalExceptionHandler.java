@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)  
     @ExceptionHandler(value = BaseApiException.class)  
 	@ResponseBody
-    public ApiExceptionMessage handleBaseException(BaseApiException e){  
+    public ApiExceptionMessage handleApiException(BaseApiException e){  
 		return new ApiExceptionMessage(e.getMessage());
     }
 
