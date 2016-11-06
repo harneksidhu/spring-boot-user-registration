@@ -17,7 +17,7 @@ import com.user.registration.SpringBootUserRegistrationApplication;
 import com.user.registration.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes=SpringBootUserRegistrationApplication.class)
+@SpringBootTest(classes=SpringBootUserRegistrationApplication.class, webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class UserRepositoryIntegrationTest {
 	
 	@Autowired

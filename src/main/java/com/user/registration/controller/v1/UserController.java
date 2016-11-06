@@ -34,8 +34,8 @@ public class UserController {
 	@RequestMapping(value= "/register", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<User> register(@RequestBody User user) {
-		User userQuery = userRepository.findOneByUserName(user.getUserName());
-		if (userQuery == null){
+		User userFound = userRepository.findOneByUserName(user.getUserName());
+		if (userFound == null){
 			if (UserRegistrationUtil.isUserNameValid(user.getUserName()) && 
 					UserRegistrationUtil.isPasswordValid(user.getPassword())){
 				User savedUser = userRepository.save(user);
@@ -44,7 +44,7 @@ public class UserController {
 				throw new BaseApiException("Invalid username and password");
 			}
 		} else{
-			return new ResponseEntity<User>(userQuery, HttpStatus.OK);
+			return new ResponseEntity<User>(userFound, HttpStatus.OK);
 		}
 	}
 	

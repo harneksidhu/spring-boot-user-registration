@@ -7,17 +7,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.user.registration.utility.Constants;
+
 @Entity
-@Table(name = "Content")
+@Table(name = "User")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long userId;
 	
-	@Column(name = "USERNAME", nullable = false, unique = true)
+	// Hibernate validation for username constraints
+	@Column(name = Constants.USER_USERNAME, nullable = false, unique = true)
 	private String userName;
 	
-	@Column(name = "PASSWORD", nullable = false)
+	@Column(name = Constants.USER_PASSWORD, nullable = false)
 	private String password;
 
 	/**

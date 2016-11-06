@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ public class UserControllerWebIntegrationTest {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Value("${baseURL}")
+	private String url;
+	
 	@Before
 	public void init(){
 		userRepository.deleteAll();
@@ -37,7 +41,7 @@ public class UserControllerWebIntegrationTest {
 	    User user = new User();
 	    user.setUserName("userTest");
 	    user.setPassword("userPassword1");
-	    ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:9000/v1/register", user, User.class);
+	    ResponseEntity<User> response = restTemplate.postForEntity(url+"v1/register", user, User.class);
 	    User returnedUser = response.getBody();
 	    assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
 	    assertThat(returnedUser.getUserName(), is(user.getUserName()));
@@ -50,7 +54,7 @@ public class UserControllerWebIntegrationTest {
 	    User user = new User();
 	    user.setUserName("userTest");
 	    user.setPassword("userPassword");
-	    ResponseEntity<ApiExceptionMessage> response = restTemplate.postForEntity("http://localhost:9000/v1/register", user, ApiExceptionMessage.class);
+	    ResponseEntity<ApiExceptionMessage> response = restTemplate.postForEntity(url+"v1/register", user, ApiExceptionMessage.class);
 	    ApiExceptionMessage returnedMessage = response.getBody();
 	    assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 	    assertThat(returnedMessage.getMessage(), is("Invalid username and password"));
@@ -63,7 +67,7 @@ public class UserControllerWebIntegrationTest {
 	    user.setUserName("userTest");
 	    user.setPassword("userPassword1");
 	    userRepository.save(user);
-	    ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:9000/v1/register", user, User.class);
+	    ResponseEntity<User> response = restTemplate.postForEntity(url+"v1/register", user, User.class);
 	    User returnedUser = response.getBody();
 	    assertThat(response.getStatusCode(), is(HttpStatus.OK));
 	    assertThat(returnedUser.getUserName(), is(user.getUserName()));
@@ -76,7 +80,7 @@ public class UserControllerWebIntegrationTest {
 	    User user = new User();
 	    user.setUserName("userTest");
 	    user.setPassword("userPassword1");
-	    ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:9000/v1/login", user, String.class);
+	    ResponseEntity<String> response = restTemplate.postForEntity(url+"v1/login", user, String.class);
 	    assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
 	    assertThat(response.getBody(), is(nullValue()));
 	}
@@ -88,7 +92,7 @@ public class UserControllerWebIntegrationTest {
 	    user.setUserName("userTest");
 	    user.setPassword("userPassword1");
 	    userRepository.save(user);
-	    ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:9000/v1/login", user, String.class);
+	    ResponseEntity<String> response = restTemplate.postForEntity(url+"v1/login", user, String.class);
 	    assertThat(response.getStatusCode(), is(HttpStatus.OK));
 	    assertThat(response.getBody(), is(nullValue()));
 	}
